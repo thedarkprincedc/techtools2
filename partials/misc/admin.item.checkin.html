@@ -1,0 +1,40 @@
+<div class="row" ng-controller="ItemCheckinCtrl">
+	<h3>Check In Items</h3>
+	Listings of Items
+	<div ng-repeat="itm in item">{{itm.name}} ({{itm.serial}}) - {{itm.description}} (<a ng-click="removeItem()">delete</a>)</div>
+	<hr/>
+	<fieldset class="small-5 columns">
+		<legend >
+			Computer:
+		</legend>
+		<label>Brand / Model</label>
+		<input type="text" ng-model="computer.brand" />
+		<label>Description</label>
+		<input type="text" ng-model="computer.description" />
+		<label>Serial #</label>
+		<input type="text" ng-model="computer.serial" />
+		<button class="tiny" ng-click="item.push({name : computer.brand, description : computer.description ,serial : computer.serial})" >
+			Add
+		</button>
+	</fieldset>
+
+	<fieldset class="small-6 columns offset-1">
+		<legend>
+			Item Inventory:
+		</legend>
+		<label>Name</label>
+		<input type="text" />
+		<label>Description</label>
+		<input type="text" />
+		<button class="tiny" >
+			Add
+		</button>
+	</fieldset>
+
+</div>
+<div class="row">
+	<hr/>
+	<button class="tiny" >
+		Save Items
+	</button>
+</div>

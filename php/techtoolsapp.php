@@ -59,7 +59,28 @@ class techsindcapp {
 
 		return $retArr;
 	}
-
+	function createAdminIssue($request){
+		$retArr = new stdClass();
+		$query = "INSERT INTO issues 
+					(fname, lname, email, phonenum, userdescription, equipment_data, redmine_issue_id, uuid, created_on, created_by) 
+					VALUES (?,?,?,?,?,?,?,?,?,?)";
+		
+		return $retArr;
+	}
+	function createContact($request){
+		$retArr = new stdClass();
+		$type = (!empty($request["type"]))?$request["type"]:"Customer";
+		$query = "INSERT INTO contacts (companyname, fname, lname, minitial, email, address, phonenum, type) VALUES (?,?,?,?,?,?,?,?)";
+		
+		return $retArr;
+	}
+	function searchContacts($request){
+		$retArr = new stdClass();
+		$query = "SELECT * FROM contacts WHERE fname = ? OR lname = ? OR email = ? OR companyname = ?";
+		
+		
+		return $retArr;
+	}
 	function post() {
 		$ch = curl_init();
 

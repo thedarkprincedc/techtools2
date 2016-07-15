@@ -11,6 +11,8 @@ var app = angular.module('techtoolsapp', ['ngRoute', 'ngAnimate', 'authDirective
 	})
 	.when('/admincreate', {
 		templateUrl : 'partials/misc/admin.create.newissue.html'
+	}).when('/adminitemcheckin', {
+		templateUrl : 'partials/misc/admin.item.checkin.html'
 	})
 	.otherwise({
 		redirectTo : '/index'

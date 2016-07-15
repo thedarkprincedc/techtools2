@@ -145,24 +145,21 @@ angular.module('miscDirective', []).directive('issueList', function() {
 		},
 		template : `<form name="userForm" ng-submit="onClickSubmit(userForm.$valid)" novalidate><div class="row">
 	
-	<div class="small-6 columns">
+	<div class="small-10 columns small-offset-1">
 		<div class="row">
 			<div class="small-12 columns">
 		<h3>Create New Ticket</h3>	
 	</div>
 			<div class="small-6 columns">
 				<label class="{{(newissue.emailerror)?'error':''}}">Email Address
-				<input type="text" class="error" name="email" ng-model="newissue.email" required/>
+				<input type="email" class="error" name="email" ng-model="newissue.email" required/>
 				</label>
-				<small class="error" ng-show="userForm.$error.email">Invalid entry</small>
-				
+				<small class="error" ng-show="userForm.$error.email">Invalid entry</small>				
 			</div>
 			<div class="small-6 columns">
 				<label>Phone #</label>
-				<input type="text" ng-model="newissue.phone" required />
-				
+				<input type="text" ng-model="newissue.phone" required />			
 			</div>
-			
 		</div>
 		<div class="row">
 			<div class="small-5 columns">
@@ -176,13 +173,45 @@ angular.module('miscDirective', []).directive('issueList', function() {
 			<div class="small-2 columns">
 				<label>Initial
 				<input type="text" ng-model="newissue.initial" />
-				</label>
-				
-					
+				</label>	
 			</div>
 		</div>
-		<label>Address</label>
-		<textarea ng-model="newissue.address"></textarea>
+		<div class="row">
+			<div class="small-5 columns">
+				<label>Is this a house call? {{(newissue.housecall)?"Yes":"No"}}</label>
+				<div class="switch">
+				  <input id="exampleCheckboxSwitch" type="checkbox" ng-model="newissue.housecall" ng-init="newissue.housecall=false">
+				  <label for="exampleCheckboxSwitch"></label>
+				</div> 
+			
+				
+			</div>
+			<fieldset class="small-7 columns">
+			<legend >Address:</legend>
+			
+				<label>Address 1</label>
+				<input type="text" ng-model="newissue.address.address1"/>
+				
+				<label>Address 2</label>
+				<input type="text" ng-model="newissue.address.address2"/>
+				<div class="row">
+					<div class="small-7 columns">
+						<label>City</label>
+						<input type="text" ng-model="newissue.address.city"/>
+					</div>
+					<div class="small-2 columns">
+						<label>State</label>
+						<input type="text" ng-model="newissue.address.state"/>
+					</div>
+					<div class="small-3 columns">
+						<label>Zipcode</label>
+						<input type="text" ng-model="newissue.address.zipcode"/>
+					</div>
+				</div>
+		
+			</fieldset>
+		</div>
+	
 	
 		<label>Problem Description</label>
 		<textarea ng-model="newissue.description"></textarea>
@@ -202,12 +231,13 @@ angular.module('miscDirective', []).directive('issueList', function() {
             	$scope.newissue.fname = false;
             	$scope.newissue.lname = false;
 			}
-			$scope.validate = function(){
-				
-            				}
+			
             $scope.onClickSubmit= function(isValid){
             	$scope.resetErrors();
             	if(isValid){
+            		//$scope.newissue.createdby = 
+            		//$scope.newissue.createdon = 
+            		
             		$http({
             				method : "POST",
             				url : "php/techtoolsapp.php?action=createissue",
@@ -227,4 +257,18 @@ angular.module('miscDirective', []).directive('issueList', function() {
             }
         }]
     }
-});
+}).controller('ItemCheckinCtrl', ['$scope', function($scope) {
+	$scope.item = [];
+	$scope.removeItem = function(){
+		if(this.itm){
+			var item = this.$parent.item;
+			var selectedItem = this.itm;
+	  		angular.forEach(item, function(obj, index){
+			    if (obj.$$hashKey === selectedItem.$$hashKey) {			    
+			      item.splice(index, 1);
+			      return;
+			    };
+			  });
+		}
+	}
+}]);
