@@ -1,6 +1,8 @@
 <?php
+//error_reporting(E_ALL);
+//ini_set('display_errors', 1);
 require_once ("phpactiveresource-master/ActiveResource.php");
-
+require_once("database.php");
 class Issue extends ActiveResource {
 	var $site = 'http://bmosley:DricasM4x@support.techsindc.com/';
 	var $request_format = 'xml';
@@ -19,7 +21,37 @@ class techsindcapp {
 		return $this -> get("http://support.techsindc.com/issues.json?key=V4846dHnN7VhjN70nnMw");
 	
 	}
-
+	function getIssues2($request) {
+		
+		if (!empty($request["id"])) {
+			$stmt = Database::prepare("SELECT * FROM issues WHERE id = ?");
+			$stmt->execute(array($request["id"]));
+			$obj = $stmt->fetchAll(PDO::FETCH_CLASS);
+			foreach ($obj as $key => $value) {
+				if(!empty($value->redmine_issue_id)){
+					$value->redminedata = json_decode($this -> get("http://support.techsindc.com/issues/{$value->redmine_issue_id}.json?key=V4846dHnN7VhjN70nnMw&include=attachments,journals"));
+				}
+			}
+			return $obj;
+		}
+	}
+	function createEquipment($request){
+		if (!empty($request["id"])) {
+			$redmine = new stdClass();
+			$redmine->list = array();
+			foreach ($request["data"] as $key => $value) {
+				
+			}
+			
+			die();
+			$stmt = Database::prepare("UPDATE issues
+									   SET equipment_data={$redmine}
+									   WHERE id = ?");
+			
+			$stmt->execute(array(json_encode($redmine)));
+		}
+		 
+	}
 	function login($request) {
 		$retArr = new stdClass();
 		$username = (!empty($request["username"]))?$request["username"]:null;
@@ -91,23 +123,28 @@ class techsindcapp {
 	}
 
 }
-
+header('Content-Type: application/json');
 $request = (!empty($_REQUEST)) ? $_REQUEST : null;
 $action = (!empty($request["action"])) ? $request["action"] : null;
 $tech = new techsindcapp();
 
 switch($action) {
 	case "login" :
-		print(json_encode($tech -> login($request)));
+		print(json_encode($tech -> login($request), JSON_PRETTY_PRINT));
 		break;
 	case "getissues" :
-		
 		print($tech -> getIssues());
 		break;
+	case "getissues2" :
+		print(json_encode($tech -> getIssues2($request), JSON_PRETTY_PRINT));
+		break;
+	case "createEquipment":
+		print(json_encode($tech -> createEquipment($request), JSON_PRETTY_PRINT));
+	break;
 	case "addcomment" :
 		break;
 	case "createissue" :
-		print(json_encode($tech -> createissue($request)));
+		print(json_encode($tech -> createissue($request), JSON_PRETTY_PRINT));
 		break;
 }
 ?>

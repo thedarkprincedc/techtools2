@@ -1,40 +1,85 @@
-<div class="row" ng-controller="ItemCheckinCtrl">
-	<h3>Check In Items</h3>
-	Listings of Items
-	<div ng-repeat="itm in item">{{itm.name}} ({{itm.serial}}) - {{itm.description}} (<a ng-click="removeItem()">delete</a>)</div>
-	<hr/>
-	<fieldset class="small-5 columns">
-		<legend >
-			Computer:
-		</legend>
-		<label>Brand / Model</label>
-		<input type="text" ng-model="computer.brand" />
-		<label>Description</label>
-		<input type="text" ng-model="computer.description" />
-		<label>Serial #</label>
-		<input type="text" ng-model="computer.serial" />
-		<button class="tiny" ng-click="item.push({name : computer.brand, description : computer.description ,serial : computer.serial})" >
-			Add
-		</button>
-	</fieldset>
+<div ng-controller="ItemCheckinCtrl">
+	
 
-	<fieldset class="small-6 columns offset-1">
-		<legend>
-			Item Inventory:
-		</legend>
-		<label>Name</label>
-		<input type="text" />
+<div class="row" >
+	<h3>{{title}}</h3>
+	<hr/>
+	<!-- ticket -->
+	<fieldset class="small-8 columns small-offset-2" ng-show="ticket">
+		<legend>Ticket Summary</legend>
+		<label>Date</label>
+		{{ticket.createdon}} by {{ticket.createdby}}
+		<label>Subject</label>
+		{{ticket.subject}}
 		<label>Description</label>
-		<input type="text" />
-		<button class="tiny" >
-			Add
-		</button>
+		{{ticket.description}}
 	</fieldset>
+	<fieldset class="small-5 columns">
+		<legend>
+			Inventory
+			<select ng-model="inventory" ng-init="inventory='computer'">
+				<option value="computer">Computer</option>
+				<option value="item">Item</option>
+				<option value="key">Key</option>
+			</select>
+		</legend>
+		<div ng-show="inventory == 'computer'">
+			<label>Brand / Model</label>
+			<input type="text" ng-model="computer.brand" />
+			<label>Description</label>
+			<input type="text" ng-model="computer.description" />
+			<label>Serial #</label>
+			<input type="text" ng-model="computer.serial" />
+			<button class="tiny" ng-click="onClickAdd()" >
+				Add
+			</button>
+		</div>
+		<div ng-show="inventory == 'item'">
+			<label>Name</label>
+			<input type="text" ng-model="inventory_item.name" />
+			<label>Description</label>
+			<input type="text" ng-model="inventory_item.description" />
+			<button class="tiny" ng-click="onClickAdd()">
+				Add
+			</button>
+		</div>
+		<div ng-show="inventory == 'key'">
+			<label>Name</label>
+			<input type="text" ng-model="invkey.name" />
+			<label>Key</label>
+			<input type="text" ng-model="invkey.key" />
+			<button class="tiny" ng-click="onClickAdd()">Add</button>
+		</div>
+	</fieldset>
+	<div class="small-6 columns offset-1">
+
+		<table>
+			<caption>
+				Listings of Items
+			</caption>
+			<thead>
+				<tr>
+					<td>Type</td>
+					<td>Name</td>
+					<th>Description</th>
+					<td>Delete</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="itm in item">
+					<td>{{itm.type}}</td>
+					<td>{{itm.name}}</td>
+					<td>{{itm.description}} {{itm.serial}}</td>
+					<td><a ng-click="removeItem()">Delete</a></td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
 
 </div>
 <div class="row">
 	<hr/>
-	<button class="tiny" >
-		Save Items
-	</button>
+	<button class="tiny" ng-click="saveItems()" >Save Items</button>
+</div>
 </div>

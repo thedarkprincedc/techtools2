@@ -1,3 +1,6 @@
+table {
+    width:100%;
+}
 #login{
     position: absolute;
     left: 50%;

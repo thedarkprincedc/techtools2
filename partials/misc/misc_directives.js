@@ -143,14 +143,19 @@ angular.module('miscDirective', []).directive('issueList', function() {
 			//@ reads the attribute value, = provides two-way binding, & works with functions
 			issueId : '='
 		},
-		template : `<form name="userForm" ng-submit="onClickSubmit(userForm.$valid)" novalidate><div class="row">
+		template : `<form name="userForm" ng-submit="onClickSubmit(userForm.$valid)" novalidate ><div class="row">
 	
 	<div class="small-10 columns small-offset-1">
 		<div class="row">
 			<div class="small-12 columns">
-		<h3>Create New Ticket</h3>	
-	</div>
-			<div class="small-6 columns">
+				<h3>Create New Ticket</h3>	
+			</div>
+	
+			
+		</div>
+		<fieldset class="row">
+		<legend >Contact Information</legend>
+		<div class="small-6 columns">
 				<label class="{{(newissue.emailerror)?'error':''}}">Email Address
 				<input type="email" class="error" name="email" ng-model="newissue.email" required/>
 				</label>
@@ -160,8 +165,6 @@ angular.module('miscDirective', []).directive('issueList', function() {
 				<label>Phone #</label>
 				<input type="text" ng-model="newissue.phone" required />			
 			</div>
-		</div>
-		<div class="row">
 			<div class="small-5 columns">
 				<label>First Name</label>
 				<input type="text" ng-model="newissue.fname" required />
@@ -175,7 +178,7 @@ angular.module('miscDirective', []).directive('issueList', function() {
 				<input type="text" ng-model="newissue.initial" />
 				</label>	
 			</div>
-		</div>
+		</fieldset>
 		<div class="row">
 			<div class="small-5 columns">
 				<label>Is this a house call? {{(newissue.housecall)?"Yes":"No"}}</label>
@@ -186,7 +189,7 @@ angular.module('miscDirective', []).directive('issueList', function() {
 			
 				
 			</div>
-			<fieldset class="small-7 columns">
+			<fieldset class="small-7 columns" >
 			<legend >Address:</legend>
 			
 				<label>Address 1</label>
@@ -222,8 +225,10 @@ angular.module('miscDirective', []).directive('issueList', function() {
 
 </div></form>
 					`,
-		controller : ['$scope', '$compile', '$http', '$rootScope','$timeout',
-		function($scope, $compile, $http, $root, $timeout) {
+		controller : ['$scope', '$compile', '$http', '$rootScope','$timeout','$location',
+		function($scope, $compile, $http, $root, $timeout,$location) {
+			
+		
 			$scope.newissue = {};
 			$scope.resetErrors = function(){
 				$scope.newissue.emailerror = false;
@@ -245,7 +250,8 @@ angular.module('miscDirective', []).directive('issueList', function() {
             				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
             			}).then(function(msg){
 	            		if(msg.data.id){
-	            			
+	            			debugger;
+	            			$location.url("#/adminitemcheckin/redmineid/10");
 	            		}
 	            		else{
 	            			alert("failed");
@@ -257,8 +263,71 @@ angular.module('miscDirective', []).directive('issueList', function() {
             }
         }]
     }
-}).controller('ItemCheckinCtrl', ['$scope', function($scope) {
+}).controller('ItemCheckinCtrl', ['$scope','$http','$routeParams', function($scope,$http,$routeParams) {
+	
+	this.routeParams = $routeParams;
+	if(this.routeParams.redmineid){
+		$http({
+			method : "POST",
+			url : "php/techtoolsapp.php?action=getissues2",
+			data : $.param({id : this.routeParams.redmineid}),
+			headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+		}).then(function(msg){
+			$scope.ticket = {
+		createdon : msg.data[0].createdon,
+		createdby : msg.data[0].fname + " " + msg.data[0].lname,
+		subject : msg.data[0].redminedata.issue.subject,
+		description : msg.data[0].redminedata.issue.description,
+		userdescription : msg.data[0].userdescription
+	};
+			debugger;
+		});
+		
+	}
+		//debugger;
+	
+	$scope.title = "Item Checkin";
 	$scope.item = [];
+	$scope.onClickAdd = function(){
+		switch($scope.inventory){
+			case "key": 
+				$scope.item.push({
+					name : $scope.invkey.name, 
+					description : $scope.invkey.key,  
+					type : 'key'
+				});
+				$scope.invkey ={};
+			break;
+			case "item": 
+				$scope.item.push({
+					name : $scope.inventory_item.name, 
+					description : $scope.inventory_item.description, 
+					type : 'item'
+				});
+				$scope.inventory_item ={};
+			break;
+			case "computer":
+				$scope.item.push({
+					name : $scope.computer.brand, 
+					description : $scope.computer.description,
+					serial : $scope.computer.serial, 
+					type : 'computer'
+				});
+					$scope.computer ={};
+			break;
+		}
+	}
+	$scope.saveItems = function(){
+		$http({
+			url : "php/techtoolsapp.php?action=saveItems",
+			method : "POST",
+			data : $.param({ item : $scope.item }),
+			headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+            		
+		}).then(function(msg){
+			
+		});
+	}
 	$scope.removeItem = function(){
 		if(this.itm){
 			var item = this.$parent.item;
@@ -268,7 +337,7 @@ angular.module('miscDirective', []).directive('issueList', function() {
 			      item.splice(index, 1);
 			      return;
 			    };
-			  });
+			});
 		}
 	}
 }]);
